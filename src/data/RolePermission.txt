@@ -1,0 +1,4 @@
+Admin,print,queue,topQueue,start,stop,restart,status,readConfig,setConfig
+Janitor,-,-,-,start,stop,restart,status,readConfig,setConfig
+Power,print,queue,topQueue,-,-,restart,-,-,-
+Ordinary,print,queue,-,-,-,-,-,-,-

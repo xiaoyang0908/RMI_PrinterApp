@@ -1,0 +1,1 @@
+User: Printer1, Action: exit, at time: 1668948779690
