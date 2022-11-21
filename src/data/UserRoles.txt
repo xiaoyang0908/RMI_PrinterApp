@@ -1,7 +1,8 @@
 Alice,Admin
-Bob,Janitor
 Cecilia,Power
 David,Ordinary
 Erica,Ordinary
 Fred,Ordinary
-George,Ordinary
+George,Janitor
+Henry,Ordinary
+Ida,Power
