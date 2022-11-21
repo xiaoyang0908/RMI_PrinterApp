@@ -27,7 +27,7 @@ public class PrinterServant extends UnicastRemoteObject implements PrinterServic
     private User currentuser = new User("","",false);
     private int user_file_line = 0;
     ArrayList<String> ACLlist=new ArrayList<>();
-    ArrayList<String> permissionList = new ArrayList<>();
+    ArrayList<String> permissionList;
 
     public PrinterServant() throws RemoteException {
         super();
@@ -45,11 +45,7 @@ public class PrinterServant extends UnicastRemoteObject implements PrinterServic
     @Override
     public String print(String filename, String printer) throws IOException {
         Printer current =this.printers.get(printer);
-        //check role permission
-        ArrayList<String> permission = checkRolePermission(currentuser.getUsername());
-        if (!permission.get(0).equals("print")){
-            return currentuser.getUsername()+"is not allowed to access print";
-        }
+
         if(current!=null)
         {
             current.addfile();
@@ -68,11 +64,7 @@ public class PrinterServant extends UnicastRemoteObject implements PrinterServic
     @Override
     public String queue(String printer) throws IOException {
         Printer current =this.printers.get(printer);
-        //check role permission
-        ArrayList<String> permission = checkRolePermission(currentuser.getUsername());
-        if (!permission.get(1).equals("queue")){
-            return currentuser.getUsername()+"is not allowed to access queue";
-        }
+
         String queues="";
         if(current!=null)
         {
@@ -94,11 +86,7 @@ public class PrinterServant extends UnicastRemoteObject implements PrinterServic
     @Override
     public String topQueue(String printer, int job) throws IOException {
         Printer targetPrinter = this.printers.get(printer);
-        //check role permission
-        ArrayList<String> permission = checkRolePermission(currentuser.getUsername());
-        if (!permission.get(2).equals("topQueue")){
-            return currentuser.getUsername()+"is not allowed to access topQueue";
-        }
+
         if (targetPrinter != null) {
             List<PrinterFile> fileList = targetPrinter.getPrintfile();
             for (int i = 0; i < fileList.size(); i++) {
@@ -117,32 +105,19 @@ public class PrinterServant extends UnicastRemoteObject implements PrinterServic
 
     @Override
     public String start() throws IOException {
-        //check role permission
-        ArrayList<String> permission = checkRolePermission(currentuser.getUsername());
-        if (!permission.get(3).equals("start")){
-            return currentuser.getUsername()+"is not allowed to access start";
-        }
         currentuser.setStatus(true);
        return "Start Server Successfull";
     }
 
     @Override
     public String stop() throws IOException {
-        //check role permission
-        ArrayList<String> permission = checkRolePermission(currentuser.getUsername());
-        if (!permission.get(4).equals("stop")){
-            return currentuser.getUsername()+"is not allowed to access stop";
-        }
+
         return "Stop the Print Server Successful. Now we are backing to the start server page ";
     }
 
     @Override
     public String restart() throws IOException {
-        //check role permission
-        ArrayList<String> permission = checkRolePermission(currentuser.getUsername());
-        if (!permission.get(5).equals("restart")){
-            return currentuser.getUsername()+"is not allowed to access restart";
-        }
+
         int printer_num=4;
         for (int i=0;i<printer_num;i++)
         {
@@ -158,11 +133,7 @@ public class PrinterServant extends UnicastRemoteObject implements PrinterServic
 
     @Override
     public String status(String printer) throws IOException {
-        //check role permission
-        ArrayList<String> permission = checkRolePermission(currentuser.getUsername());
-        if (!permission.get(6).equals("status")){
-            return currentuser.getUsername()+"is not allowed to access status";
-        }
+
         String status="";
         int file_num = 0;
         Printer current =this.printers.get(printer);
@@ -189,11 +160,7 @@ public class PrinterServant extends UnicastRemoteObject implements PrinterServic
 
     @Override
     public String readConfig(String parameter) throws IOException {
-        //check role permission
-        ArrayList<String> permission = checkRolePermission(currentuser.getUsername());
-        if (!permission.get(7).equals("readConfig")){
-            return currentuser.getUsername()+"is not allowed to access readConfig";
-        }
+
         switch (parameter) {
             case "username":
                 return currentuser.getUsername();
@@ -206,11 +173,7 @@ public class PrinterServant extends UnicastRemoteObject implements PrinterServic
 
     @Override
     public String setConfig(String parameter, String value) throws IOException {
-        //check role permission
-        ArrayList<String> permission = checkRolePermission(currentuser.getUsername());
-        if (!permission.get(8).equals("setConfig")){
-            return currentuser.getUsername()+"is not allowed to access setConfig";
-        }
+
        String[] userinfo = new String[10];
        String[] userinfo1 = new String[10];
                
@@ -298,6 +261,7 @@ public class PrinterServant extends UnicastRemoteObject implements PrinterServic
         return false;
     }
 
+    @Override
     public ArrayList<String> checkRolePermission(String username) throws IOException {
         //get the role of user
         BufferedReader userRoles = new BufferedReader(new FileReader("src/data/UserRoles.txt"));
@@ -316,12 +280,15 @@ public class PrinterServant extends UnicastRemoteObject implements PrinterServic
         BufferedReader permissionRole = new BufferedReader(new FileReader("src/data/RolePermission.txt"));
         String permission;
         int i=0;
+        permissionList=new ArrayList<>();
         while ((permission = permissionRole.readLine())!=null) {
             String[] permissionInfo = permission.split(",");
             if (role.equals(permissionInfo[0])){
-                while (!permissionInfo[i+1].equals("-") && permissionInfo[i+1]!=null){
-                    permissionList.add(i,permissionInfo[i+1]);
-                    i++;
+                for(i=1;i<permissionInfo.length;i++){
+                    if(!permissionInfo[i].equals("-"))
+                    {
+                        permissionList.add(permissionInfo[i]);
+                    }
                 }
             }
         }

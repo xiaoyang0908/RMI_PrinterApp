@@ -22,12 +22,11 @@ import java.util.Scanner;
 public class Client {
     static String curUser;
     public static void printMenu(PrinterService service) throws IOException{
-        ArrayList<String> ACLlist=service.displayACL();
-//        String role = service.rolePermission();
+        String role = service.rolePermission();
         System.out.println(" ");
         System.out.println(" ");
         System.out.println("Hi! "+curUser);
-//        System.out.print("you are the "+ role);
+        System.out.print("you are the "+ role);
 
         System.out.println(" ");
         //the menu with available options
@@ -86,14 +85,19 @@ public class Client {
         Boolean loginsuccessgul = loginMenu(service);
         Boolean serviceStart = false;
         Boolean hasOperation;
+        ArrayList<String> Rolelist;
         while(loginsuccessgul)
         {
             printMenu(service);
             select = input.next();
             hasOperation=false;
+            Rolelist=service.checkRolePermission(curUser);
             switch(select){
             case "1" :
-            hasOperation=service.AccessControlList("print");
+            if(Rolelist.contains("print"))
+            {
+                hasOperation = true;
+            }
             if((serviceStart==true)&&(hasOperation==true))
             {
                 System.out.println("prints file filename on the specified printer");
@@ -121,7 +125,10 @@ public class Client {
             }
             break;
             case "2" :
-            hasOperation=service.AccessControlList("queue");
+            if(Rolelist.contains("queue"))
+            {
+                hasOperation = true;
+            }
             if((serviceStart==true)&&(hasOperation==true))
             {
                 System.out.println("list the print queue for a given printer");
@@ -147,7 +154,10 @@ public class Client {
             }
             break;
             case "3" :
-            hasOperation=service.AccessControlList("topQueue");
+            if(Rolelist.contains("topQueue"))
+            {
+                hasOperation = true;
+            }
             if((serviceStart==true)&&(hasOperation==true))
             {
                 System.out.println("list the print queue for a given printer");
@@ -175,7 +185,10 @@ public class Client {
             }
             break;
             case "4" :
-            hasOperation=service.AccessControlList("stop");
+            if(Rolelist.contains("stop"))
+            {
+                hasOperation = true;
+            }
             if((serviceStart==true)&&(hasOperation==true))
             {
                 service.log(printer,"stop");
@@ -198,7 +211,10 @@ public class Client {
             break;
             case "5" :
                 
-            hasOperation=service.AccessControlList("restart");
+            if(Rolelist.contains("restart"))
+            {
+                hasOperation = true;
+            }
             if((serviceStart==true)&&(hasOperation==true))
             {
                 System.out.println("restart the printer server");
@@ -220,7 +236,10 @@ public class Client {
             //loginMenu(service);
             break;
             case "6" :
-            hasOperation=service.AccessControlList("status");
+            if(Rolelist.contains("status"))
+            {
+                hasOperation = true;
+            }
             if((serviceStart==true)&&(hasOperation==true))
             {
                 System.out.println("Print status of printer");
@@ -244,7 +263,10 @@ public class Client {
             }
             break;
             case "7" :
-            hasOperation=service.AccessControlList("readConfig");
+            if(Rolelist.contains("readConfig"))
+            {
+                hasOperation = true;
+            }
             if((serviceStart==true)&&(hasOperation==true))
             {
                 System.out.println(" ");
@@ -269,7 +291,10 @@ public class Client {
             }
             break;
             case "8" :
-            hasOperation=service.AccessControlList("setConfig");
+            if(Rolelist.contains("setConfig"))
+            {
+                hasOperation = true;
+            }
             if((serviceStart==true)&&(hasOperation==true))
             {
                 System.out.println(" ");
@@ -296,7 +321,10 @@ public class Client {
             }
             break;
             case "9":
-            hasOperation=service.AccessControlList("start");
+            if(Rolelist.contains("start"))
+            {
+                hasOperation = true;
+            }
             if(hasOperation==true)
             {
                 serviceStart=true;
